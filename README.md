@@ -163,5 +163,31 @@ git checkout <commit-id>
 git checkout master
 ```
 
+### Technologies used
+- VirtualBox
+- Vagrant
+- Python
+- Django
+- Django REST Framework
+- Atom
+- Git
+- ModHeader (Chrome Extension)
+
+#### Categories
+
+1.- Development Server (Vagrant > VirtualBox > Virtual Server - Application Code)
+
+2.- Application Code (Python, Django, Django REST Framework)
+
+3.- Tools (Atom, Git, ModHeader)
+
+### Installation
+- Vagrant - https://www.vagrantup.com/downloads.html
+- VirtualBox - https://www.virtualbox.org/wiki/Downloads
+- ModHeader - https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj?hl=en
+- Atom - https://atom.io/
+- Git-SCM - https://git-scm.com/downloads
+
+
 ## References
 - https://www.udemy.com/django-python
