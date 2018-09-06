@@ -181,12 +181,24 @@ git checkout master
 
 3.- Tools (Atom, Git, ModHeader)
 
-### Installation
+## Installation
 - Vagrant - https://www.vagrantup.com/downloads.html
 - VirtualBox - https://www.virtualbox.org/wiki/Downloads
 - ModHeader - https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj?hl=en
 - Atom - https://atom.io/
 - Git-SCM - https://git-scm.com/downloads
+
+## Setting up your project
+
+### Creating a workspace
+- Create a "workspace" directory/folder
+- Inside "workspace" folder, create a folder for the project called "profiles-rest-api"
+- Atom > File > Add Project Folder > Select "workspace/profiles-rest-api"
+
+
+### Creating a Git project
+- Markdown Cheatsheet - https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+- Github Python.gitignore - https://gist.github.com/LondonAppDev/66c3291e4f487ac92fcc96735e44c35e
 
 
 ## References
