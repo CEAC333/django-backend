@@ -312,6 +312,131 @@ Go to the terminal where you are inside the Vagrant Sever under `/vagrant` and r
 python hello_world.py
 ```
 
+## Creating a Django app
+
+### Create Python Virtual Environment
+
+```
+cd workspace/profiles-rest-api/
+```
+
+```
+vagrant up
+```
+
+```
+vagrant ssh
+```
+
+```
+mkvirtualenv profiles_api --python=python3
+```
+
+```
+deactivate
+```
+
+### Install required Python packages
+
+```
+workon profiles_api
+```
+
+```
+pip install django==1.11
+```
+
+```
+pip install djangorestframework==3.6.2
+```
+
+
+### Create a new Django project & app
+
+Open `profiles-rest-api` in Atom
+Right Click and add `New Folder` called `src`
+Go to the terminal where you are connected to the Vagrant Server and working on the `profiles_api`
+
+```
+cd /vagrant/src
+```
+
+```
+django-admin.py startproject profiles_project
+```
+
+```
+cd profiles_project
+```
+
+```
+python manage.py startapp profiles_api
+```
+
+### Enable our app in the Django settings file
+
+ATOM:
+profiles-rest-api > profiles_project > profiles_project > `settings.py`
+
+Enable the following apps adding them to the list:
+```
+INSTALLED_APPS = [
+... 
+...
+...
+'rest_framework',
+'rest_framework.authtoken',
+'profiles_api',
+]
+```
+
+### Saving our requirements
+
+```
+workon profiles_api
+```
+
+```
+cd /vagrant/
+```
+
+```
+pip freeze
+```
+
+```
+pip freeze > requirements.txt
+```
+
+### Test and commit our changes
+
+Make sure you are connected to our development server and you're workinng on the profiles API
+
+```
+cd /vagrant/src/profiles_project
+```
+
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Go to Chrome to `127.0.0.1:8080`
+
+Open a separate terminal
+
+```
+cd workspace/profiles-rest-api
+```
+
+```
+git add .
+```
+
+```
+git commit -am "Added django project and app. Added requirements" 
+```
+
+### What are Django Models?
 
 ## References
 - https://www.udemy.com/django-python
