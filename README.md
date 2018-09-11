@@ -544,5 +544,69 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'profiles_api.UserProfile'
 ```
 
+### Create migrations and sync DB
+
+On the terminal go to `/workspace/profiles-rest-api`
+
+```
+vagrant up
+```
+
+```
+vagrant ssh
+```
+
+```
+workon profiles_api
+```
+
+```
+cd /vagrant/src/profiles_project
+```
+
+```
+python manage.py makemigrations
+```
+
+```
+python manage.py migrate
+```
+
+## Setup Django Admin
+
+### Creating a superuser
+
+In the terminal go to the folder of the project
+
+```
+cd workspace/profiles-rest-api
+```
+
+```
+vagrant up
+```
+
+```
+vagrant ssh
+```
+
+```
+workon profiles_api
+```
+
+```
+cd /vagrant/src/profiles_project/
+```
+
+```
+python manage.py createsuperuser
+```
+
+- Django Admin (Official Docs) - https://docs.djangoproject.com/en/1.11/ref/contrib/admin/
+
+### Enable Django Admin
+
+### Test Django Admin
+
 ## References
 - https://www.udemy.com/django-python
