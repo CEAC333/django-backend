@@ -606,6 +606,19 @@ python manage.py createsuperuser
 
 ### Enable Django Admin
 
+Open `profiles-rest-api` project on Atom
+
+profiles-rest-api > src > profiles_project > profiles_api > `admin.py`
+
+```
+from django.contrib import admin
+
+from . import models
+
+# Register your model here.
+admin.site.register(models.UserProfile)
+```
+
 ### Test Django Admin
 
 ## References
