@@ -492,8 +492,8 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
         return self.email
 ```
 
-- Django Model Fields (Official Docs)
-- Substituting a custom User model (Official Docs)
+- Django Model Fields (Official Docs) - https://docs.djangoproject.com/en/1.11/ref/models/fields/
+- Substituting a custom User model (Official Docs) - https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#auth-custom-user
 
 
 
