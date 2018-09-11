@@ -336,6 +336,8 @@ mkvirtualenv profiles_api --python=python3
 deactivate
 ```
 
+- Virtual Environment (Docs) - https://python-guide.readthedocs.io/en/latest/dev/virtualenvs/
+
 ### Install required Python packages
 
 ```
@@ -436,7 +438,64 @@ git add .
 git commit -am "Added django project and app. Added requirements" 
 ```
 
+## Setup the Database
+
 ### What are Django Models?
+
+In Django we use models to describe the data that we need for our application.
+Django uses these models to automatically set up and configure our database to store our data effectively.
+Each model we describe in our Django models maps to a specific table on our database.
+Django handles the interaction between out model and our database on our behalf so we don't need to write any sql statement or interact with the database directly we do it all using the Django models
+
+- Django Models (Official Docs) - https://docs.djangoproject.com/en/1.11/topics/db/models/
+
+### Create our user database model
+
+*models.py*
+
+```
+# ... Imports Section ... #
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
+# ....................... #
+
+
+class UserProfile(AbstractBaseUser, PermissionsMixin):
+    """
+    Represents a "user profile" inside out system. Stores all user account
+    related data, such as 'email address' and 'name'.
+    """
+
+    email = models.EmailField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UserProfileManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name']
+
+    def get_full_name(self):
+        """Django uses this when it needs to get the user's full name."""
+
+        return self.name
+
+    def get_short_name(self):
+        """Django uses this when it needs to get the users abbreviated name."""
+
+        return self.name
+
+    def __str__(self):
+        """Django uses this when it needs to convert the object to text."""
+
+        return self.email
+```
+
+- Django Model Fields (Official Docs)
+- Substituting a custom User model (Official Docs)
+
+
 
 ## References
 - https://www.udemy.com/django-python
