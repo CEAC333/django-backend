@@ -621,5 +621,18 @@ admin.site.register(models.UserProfile)
 
 ### Test Django Admin
 
+On the terminal inside the vagrant server, with `profiles_api` active
+On the folder `/vagrant/src/profiles_project`
+
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Now go to Chrome:
+
+```
+127.0.0.1:8080/admin
+```
+
 ## References
 - https://www.udemy.com/django-python
