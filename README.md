@@ -532,6 +532,17 @@ class UserProfileManager(BaseUserManager):
         return user
 ```
 
+### Set our custom user model
+
+Inside Atom:
+profiles-rest-api > src > profiles_project > `setting.py`
+
+Add the following last line to that file:
+```
+STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'profiles_api.UserProfile'
+```
 
 ## References
 - https://www.udemy.com/django-python
