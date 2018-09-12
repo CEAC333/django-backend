@@ -634,5 +634,182 @@ Now go to Chrome:
 127.0.0.1:8080/admin
 ```
 
+## Introduction to API Views
+
+### What is an APIView?
+
+Django Rest Framework offers a couple of helper classes we can use to create our API endpoints.
+
+- APIView
+- Viewset
+
+Both ways are slightly different and offer their own benefits.
+
+#### What are APIViews?
+
+The API view is the most basic type of view we can use to build our API. It enables us to describe the logic which makes our API endpoint.
+
+An API view allows us to define functions that match the standard HTTP methods
+- GET, POST, PUT, PATCH, DELETE
+
+Gives you the most control over the logic:
+- Perfect for implementing complex logic
+- Calling other APIs
+- Working with local files
+
+By allowing us to customize the function for each HTTP method on our API URL, API views give us the most control over our application logic. This is perfect in cases where you need to do something a little bit different from simply updating objects in the database
+
+#### When to use APIViews?
+
+Some examples of when to use an APIView:
+- You need the full control over the logic
+- Processing files and rendering a synchronous response
+- You are calling other APIs/services
+- Accessing local files or data
+
+- APIView (Official Docs) - http://www.django-rest-framework.org/api-guide/views/
+
+### Create first APIView
+
+Open `profiles-rest-api` project in Atom:
+
+profiles-rest-api > src > project_project > profiles_api > `views.py`
+
+
+
+```
+from django.shortcuts import render
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+# Create your views here
+
+class HelloApiView(APIView):
+    """Test API View."""
+
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview= [
+            'Uses HTTP methods as functions (get, post, patch, put, delete)',
+            'Is similar to a traditional Django View',
+            'Gives you the most control over your logic',
+            'Is mapped manually to URLs',
+        ]
+
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
+```
+
+### Configure view URL
+
+Open `profiles-rest-api` project in Atom:
+
+profiles-rest-api > src > project_project > profiles_api > profiles_project > `utils.py`
+
+```
+"""profiles_project URL Configuration
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/1.11/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.conf.urls import url, include
+    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+"""
+from django.conf.urls import url
+from django.conf.urls import include
+from django.contrib import admin
+
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
+    url(r'^api/', include('profiles_api.urls')),
+]
+```
+
+- URL Dispatcher (Official Docs) - https://docs.djangoproject.com/en/1.11/topics/http/urls/
+
+### Testing our API View
+
+
+
+### Create a Serializer
+
+```
+from rest_framework import serializers
+
+
+class HelloSerializer(serializers.Serializer):
+    """Serializes a name field for testing out APIView"""
+
+    name = serializers.CharField(max_length=10)
+```
+
+- Serializers (Official Docs) - http://www.django-rest-framework.org/api-guide/serializers/
+- Serializer Fields (Official Docs) - http://www.django-rest-framework.org/api-guide/fields/
+
+### Add POST method to APIView
+
+```
+from django.shortcuts import render
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from . import serializers
+from rest_framework import status
+
+# Create your views here.
+
+class HelloApiView(APIView):
+    """Test API View."""
+    
+    serializer_class = serializers.HelloSerializer
+
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview = [
+            'Uses HTTP methods as function (get, post, patch, put, delete)',
+            'It is similar to a traditional Django view',
+            'Gives you the most control over your logic',
+            'Is mapped manually to URLs'
+        ]
+
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
+      
+    def post(self, request):
+        """Create a hello message with our name."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}!'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+- Status Codes (Official Docs) - http://www.django-rest-framework.org/api-guide/status-codes/
+
+### Test POST Function
+
+
+
+### Add PUT, PATCH and DELETE methods
+
+
+
+### Test the PUT, PATCH and DELETE methods
+
+
+
 ## References
 - https://www.udemy.com/django-python
