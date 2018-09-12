@@ -732,6 +732,21 @@ urlpatterns = [
 ]
 ```
 
+Create a new file under
+
+`src\profiles_project\profiles_api\urls.py`
+
+```
+from django.conf.urls import url
+
+from . import views
+
+
+urlpatterns = [
+    url(r'^hello-view/', views.HelloApiView.as_view()),
+]
+```
+
 - URL Dispatcher (Official Docs) - https://docs.djangoproject.com/en/1.11/topics/http/urls/
 
 ### Testing our API View
