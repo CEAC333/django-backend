@@ -751,6 +751,19 @@ urlpatterns = [
 
 ### Testing our API View
 
+In the terminal window that is running our profiles project vagrant server
+Under `/vagrant/src/profiles_project` 
+With `profiles_api` active
+
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Go to Chrome 
+
+```
+127.0.0.1:8080/api/hello-view/
+```
 
 
 ### Create a Serializer
