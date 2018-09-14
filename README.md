@@ -1157,11 +1157,37 @@ Go to Chrome under:
 
 ## Create Profiles API
 
-### Plan our Profiles API
+### Plan our Profile API
+
+**Basic Requirements**
+
+- Create new profile
+    - Validate profile data
+- List existing profiles
+    - Search for profiles
+- View specific profile
+- Update my profile of logged in user
+    - Update name/email address
+    - Change password
+- Delete profile
+
+**API URLs**
+
+URLs for our API:
+- `/api/profile/` - list all profiles
+    - GET (list profiles)
+    - POST (create profile)
+- `/api/profile/<profile_id>` - manage specific profile
+    - GET (view specific profile)
+    - PUT / PATCH (update profile)
+    - DELETE (remove profile)
+
 
 ### Create user profile serializer
 
-`serializers.py`
+In Atom inside `profiles-rest-api` project
+
+profiles-rest-api > src > profiles_project > profiles_api > `serializers.py`
 
 ```
 from rest_framework import serializers
