@@ -904,7 +904,9 @@ Examples of when you might use a Viewset:
 
 ### Create a simple Viewset
 
-`views.py`
+In Atom inside `profiles-rest-api` project
+
+profiles-rest-api > src > profiles_project > profiles_api > `views.py`
 
 ```
 from django.shortcuts import render
@@ -970,7 +972,7 @@ class HelloViewSet(viewsets.ViewSet):
         """Return a hello message."""
 
         a_viewset = [
-            'Uses actions (list, create, retrieve, update, partial_update)'
+            'Uses actions (list, create, retrieve, update, partial_update)',
             'Automatically maps to URLS using Routers',
             'Provides more functionality with less code'
         ]
