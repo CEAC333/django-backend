@@ -870,7 +870,245 @@ def delete(self, request, pk=None):
 
 ### Test the PUT, PATCH and DELETE methods
 
+In the terminal inside our Vagrant Server and under `/vagrant/src/profiles_project` with `profiles_api` active
 
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+## Introduction to Viewsets
+
+### What is a Viewset?
+
+Django Rest Framework offers two classes that help us write the logic for our API
+
+- APIView
+- Viewset
+
+**Viewsets**
+
+Uses model operations for functions:
+- List, Create, Retrieve, Update, Partial Update, Destroy
+
+Takes care a lot of typical logic for you:
+- Perfect for standard database operations
+- Fastest way to make a database interface
+
+**When to use Viewsets?**
+
+Examples of when you might use a Viewset:
+- You need a simple CRUD interface to your database
+- You want a quick and simple API
+- You need little to no customization on the logic
+- You are working with standard data structures
+
+### Create a simple Viewset
+
+`views.py`
+
+```
+from django.shortcuts import render
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import viewsets
+
+from . import serializers
+
+# Create your views here.
+
+class HelloApiView(APIView):
+    """Test API View."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview = [
+            'Uses HTTP methods as function (get, post, patch, put, delete)',
+            'It is similar to a traditional Django view',
+            'Gives you the most control over your logic',
+            'Is mapped manually to URLs'
+        ]
+
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
+
+    def post(self, request):
+        """Create a hello message with our name."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'method': 'put'})
+
+    def patch(self, request, pk=None):
+        """Patch request, only updates fields provided in the request."""
+
+        return Response({'method': 'patch'})
+
+    def delete(self, request, pk=None):
+        """Deletes and object."""
+
+        return Response({'method': 'delete'})
+      
+class HelloViewSet(viewsets.ViewSet):
+    """Test API ViewSet"""
+
+    def list(self, request):
+        """Return a hello message."""
+
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update)'
+            'Automatically maps to URLS using Routers',
+            'Provides more functionality with less code'
+        ]
+
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
+```
+
+### Add URL Router
+
+`urls.py`
+
+```
+from django.conf.urls import url
+from django.conf.urls import include
+
+from rest_framework.routers import DefaultRouter
+
+from . import views
+
+router = DefaultRouter()
+router.register('hello-viewset', views.HelloViewSet, base_name='hello-viewset')
+
+urlpatterns = [
+    url(r'^hello-view/', views.HelloApiView.as_view()),
+    url(r'', include(router.urls)),
+]
+```
+
+### Testing our Viewset
+
+### Add create, retrieve, update, partial_update and destroy functions
+
+`views.py`
+
+```
+from django.shortcuts import render
+
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+from . import serializers
+
+# Create your views here.
+
+class HelloApiView(APIView):
+    """Test API View."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview = [
+            'Uses HTTP methods as function (get, post, patch, put, delete)',
+            'It is similar to a traditional Django view',
+            'Gives you the most control over your logic',
+            'Is mapped manually to URLs'
+        ]
+
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
+
+    def post(self, request):
+        """Create a hello message with our name."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'method': 'put'})
+
+    def patch(self, request, pk=None):
+        """Patch request, only updates fields provided in the request."""
+
+        return Response({'method': 'patch'})
+
+    def delete(self, request, pk=None):
+        """Deletes and object."""
+
+        return Response({'method': 'delete'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """Test API ViewSet."""
+
+    serializer_class = serializers.HelloSerializer
+    
+    def list(self, request):
+        """Return a hello message."""
+
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update)',
+            'Automatically maps to URLs using Routers',
+            'Provides more functionality with less code.'
+        ]
+
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
+
+    def create(self, request):
+        """Create a new hello message."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        """Handles getting an object by its ID."""
+
+        return Response({'http_method': 'GET'})
+
+    def update(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'http_method': 'PUT'})
+
+    def partial_update(self, request, pk=None):
+        """Handles updating part of an object."""
+
+        return Response({'http_method': 'PATCH'})
+```
+
+### Test Viewset
 
 ## References
 - https://www.udemy.com/django-python
