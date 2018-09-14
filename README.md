@@ -1227,7 +1227,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 ### Create profiles Viewset
 
-`views.py`
+In Atom inside `profiles-rest-api` project
+
+profiles-rest-api > src > profiles_project > profiles_api > `views.py`
 
 ```
 from django.shortcuts import render
