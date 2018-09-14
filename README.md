@@ -1349,7 +1349,6 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 ### Register profile Viewset with the URL router
 
-
 In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `urls.py`
@@ -1410,7 +1409,12 @@ Test updateing a user:
 
 ### Create permission class
 
-`permisssions.py`
+
+In Atom inside `profiles-rest-api` project
+
+Create a new file called `permisssions.py`
+
+profiles-rest-api > src > profiles_project > profiles_api > `permisssions.py`
 
 ```
 from rest_framework import permissions
