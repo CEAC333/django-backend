@@ -1155,5 +1155,346 @@ Go to Chrome under:
 127.0.0.1:8080/api/hello-viewset/1/
 ```
 
+## Create Profiles API
+
+### Plan our Profiles API
+
+### Create user profile serializer
+
+`serializers.py`
+
+```
+from rest_framework import serializers
+
+from . import models
+
+
+class HelloSerializer(serializers.Serializer):
+    """Serializes a name field for testing our APIView."""
+
+    name = serializers.CharField(max_length=10)
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """A serializer for our user profile objects."""
+
+    class Meta:
+        model = models.UserProfile
+        fields = ('id', 'email', 'name', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        """Create and return a new user."""
+
+        user = models.UserProfile(
+            email=validated_data['email'],
+            name=validated_data['name']
+        )
+
+        user.set_password(validated_data['password'])
+        user.save()
+
+        return user
+```
+
+- ModelSerializer (Official Docs) - http://www.django-rest-framework.org/api-guide/serializers/#modelserializer
+
+### Create profiles Viewset
+
+`views.py`
+
+```
+from django.shortcuts import render
+
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+from . import serializers
+from . import models
+
+# Create your views here.
+
+class HelloApiView(APIView):
+    """Test API View."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview = [
+            'Uses HTTP methods as function (get, post, patch, put, delete)',
+            'It is similar to a traditional Django view',
+            'Gives you the most control over your logic',
+            'Is mapped manually to URLs'
+        ]
+
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
+
+    def post(self, request):
+        """Create a hello message with our name."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'method': 'put'})
+
+    def patch(self, request, pk=None):
+        """Patch request, only updates fields provided in the request."""
+
+        return Response({'method': 'patch'})
+
+    def delete(self, request, pk=None):
+        """Deletes and object."""
+
+        return Response({'method': 'delete'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """Test API ViewSet."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """Return a hello message."""
+
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update)',
+            'Automatically maps to URLs using Routers',
+            'Provides more functionality with less code.'
+        ]
+
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
+
+    def create(self, request):
+        """Create a new hello message."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        """Handles getting an object by its ID."""
+
+        return Response({'http_method': 'GET'})
+
+    def update(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'http_method': 'PUT'})
+
+    def partial_update(self, request, pk=None):
+        """Handles updating part of an object."""
+
+        return Response({'http_method': 'PATCH'})
+
+    def destroy(self, request, pk=None):
+        """Handles removing an object."""
+
+        return Response({'http_method': 'DELETE'})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handles creating, creating and updating profiles."""
+
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
+```
+
+### Register profile Viewset with the URL router
+
+`urls.py`
+
+```
+from django.conf.urls import url
+from django.conf.urls import include
+
+from rest_framework.routers import DefaultRouter
+
+from . import views
+
+router = DefaultRouter()
+router.register('hello-viewset', views.HelloViewSet, base_name='hello-viewset')
+router.register('profile', views.UserProfileViewSet)
+
+urlpatterns = [
+    url(r'^hello-view/', views.HelloApiView.as_view()),
+    url(r'', include(router.urls))
+]
+```
+
+### Test creating a profile
+
+### Create permission class
+
+`permisssions.py`
+
+```
+from rest_framework import permissions
+
+
+class UpdateOwnProfile(permissions.BasePermission):
+    """Allow users to edit their own profile."""
+
+    def has_object_permission(self, request, view, obj):
+        """Check user is trying to edit their own profile."""
+
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.id == request.user.id
+```
+
+- Permissions (Official Docs) - http://www.django-rest-framework.org/api-guide/permissions/
+
+### Add authentication and permissions to Viewset
+
+`views.py`
+
+```
+from django.shortcuts import render
+
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+
+from . import serializers
+from . import models
+from . import permissions
+
+# Create your views here.
+
+class HelloApiView(APIView):
+    """Test API View."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview = [
+            'Uses HTTP methods as function (get, post, patch, put, delete)',
+            'It is similar to a traditional Django view',
+            'Gives you the most control over your logic',
+            'Is mapped manually to URLs'
+        ]
+
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
+
+    def post(self, request):
+        """Create a hello message with our name."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'method': 'put'})
+
+    def patch(self, request, pk=None):
+        """Patch request, only updates fields provided in the request."""
+
+        return Response({'method': 'patch'})
+
+    def delete(self, request, pk=None):
+        """Deletes and object."""
+
+        return Response({'method': 'delete'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """Test API ViewSet."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """Return a hello message."""
+
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update)',
+            'Automatically maps to URLs using Routers',
+            'Provides more functionality with less code.'
+        ]
+
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
+
+    def create(self, request):
+        """Create a new hello message."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        """Handles getting an object by its ID."""
+
+        return Response({'http_method': 'GET'})
+
+    def update(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'http_method': 'PUT'})
+
+    def partial_update(self, request, pk=None):
+        """Handles updating part of an object."""
+
+        return Response({'http_method': 'PATCH'})
+
+    def destroy(self, request, pk=None):
+        """Handles removing an object."""
+
+        return Response({'http_method': 'DELETE'})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handles creating, creating and updating profiles."""
+
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.UpdateOwnProfile,)
+```
+
+### Test new permissions
+
+### Add search profiles feature
+
+### Test searching profiles
+
+
 ## References
 - https://www.udemy.com/django-python
