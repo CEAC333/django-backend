@@ -1349,7 +1349,10 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 ### Register profile Viewset with the URL router
 
-`urls.py`
+
+In Atom inside `profiles-rest-api` project
+
+profiles-rest-api > src > profiles_project > profiles_api > `urls.py`
 
 ```
 from django.conf.urls import url
@@ -1370,6 +1373,40 @@ urlpatterns = [
 ```
 
 ### Test creating a profile
+
+In the terminal inside our Vagrant Server and under `/vagrant/src/profiles_project` with `profiles_api` active
+
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Go to Chrome under:
+
+```
+127.0.0.1:8080/api/
+```
+
+```
+127.0.0.1:8080/api/profile/
+```
+
+Create new user to test:
+`Email:` test@test.com
+`Name:` Test User
+`Password:` Awesome1
+
+Test updateing a user:
+```
+127.0.0.1:8080/api/profile/2/
+```
+
+> Raw data
+```
+{
+    "name": "Test User 2"
+}
+```
+
 
 ### Create permission class
 
