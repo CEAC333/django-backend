@@ -1394,7 +1394,7 @@ Create new user to test:
 `Name:` Test User
 `Password:` Awesome1
 
-Test updateing a user:
+Test updating a user:
 ```
 127.0.0.1:8080/api/profile/2/
 ```
@@ -1708,6 +1708,33 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 ```
 
 ### Test searching profiles
+
+In the terminal inside our Vagrant Server and under `/vagrant/src/profiles_project` with `profiles_api` active
+
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Go to Chrome under:
+
+```
+127.0.0.1:8080/api/profile/
+```
+
+Create new user to test:
+`Email:` brooke@test.com
+`Name:` Brooke Rutherford
+`Password:` Awesome1
+
+> User Profile List
+
+> Filters:
+
+`Search:` Brooke 
+
+> Filters:
+
+`Search:` test 
 
 
 ## References
