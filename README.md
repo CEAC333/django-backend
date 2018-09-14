@@ -1139,5 +1139,21 @@ class HelloViewSet(viewsets.ViewSet):
 
 ### Test Viewset
 
+In the terminal inside our Vagrant Server and under `/vagrant/src/profiles_project` with `profiles_api` active
+
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Go to Chrome under:
+
+```
+127.0.0.1:8080/api/hello-viewset/
+```
+
+```
+127.0.0.1:8080/api/hello-viewset/1/
+```
+
 ## References
 - https://www.udemy.com/django-python
