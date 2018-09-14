@@ -876,6 +876,12 @@ In the terminal inside our Vagrant Server and under `/vagrant/src/profiles_proje
 python manage.py runserver 0.0.0.0:8080
 ```
 
+Go to Chrome under:
+
+```
+127.0.0.1:8080/api/hello-view/
+```
+
 ## Introduction to Viewsets
 
 ### What is a Viewset?
@@ -1004,6 +1010,18 @@ urlpatterns = [
 ```
 
 ### Testing our Viewset
+
+In the terminal inside our Vagrant Server and under `/vagrant/src/profiles_project` with `profiles_api` active
+
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Go to Chrome under:
+
+```
+127.0.0.1:8080/api/
+```
 
 ### Add create, retrieve, update, partial_update and destroy functions
 
