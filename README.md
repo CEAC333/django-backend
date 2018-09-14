@@ -1025,7 +1025,9 @@ Go to Chrome under:
 
 ### Add create, retrieve, update, partial_update and destroy functions
 
-`views.py`
+In Atom inside `profiles-rest-api` project
+
+profiles-rest-api > src > profiles_project > profiles_api > `views.py`
 
 ```
 from django.shortcuts import render
@@ -1128,6 +1130,11 @@ class HelloViewSet(viewsets.ViewSet):
         """Handles updating part of an object."""
 
         return Response({'http_method': 'PATCH'})
+        
+    def destroy(self, request, pk=None):
+        """Handles removing an object"""
+        
+        return Response('http_method': 'DELETE')
 ```
 
 ### Test Viewset
