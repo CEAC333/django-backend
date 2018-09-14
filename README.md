@@ -837,7 +837,17 @@ class HelloApiView(APIView):
 
 ### Test POST Function
 
+In the terminal inside our Vagrant Server and under `/vagrant/src/profiles_project` with `profiles_api` active
 
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Go to Chrome under:
+
+```
+127.0.0.1:8080/api/hello-view/
+```
 
 ### Add PUT, PATCH and DELETE methods
 
