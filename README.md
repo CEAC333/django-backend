@@ -982,7 +982,9 @@ class HelloViewSet(viewsets.ViewSet):
 
 ### Add URL Router
 
-`urls.py`
+In Atom inside `profiles-rest-api` project
+
+profiles-rest-api > src > profiles_project > profiles_api > `urls.py`
 
 ```
 from django.conf.urls import url
