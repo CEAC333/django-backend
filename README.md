@@ -768,6 +768,10 @@ Go to Chrome
 
 ### Create a Serializer
 
+In Atom inside `profiles-rest-api` project create a new file, `serializers.py`
+
+profiles-rest-api > src > profiles_project > profiles_api > New file `serializers.py`
+
 ```
 from rest_framework import serializers
 
