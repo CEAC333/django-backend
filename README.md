@@ -1722,17 +1722,20 @@ Go to Chrome under:
 ```
 
 Create new user to test:
+
 `Email:` brooke@test.com
+
 `Name:` Brooke Rutherford
+
 `Password:` Awesome1
 
-> User Profile List
+-> User Profile List
 
-> Filters:
+-> Filters:
 
 `Search:` Brooke 
 
-> Filters:
+-> Filters:
 
 `Search:` test 
 
