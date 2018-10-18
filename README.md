@@ -1739,6 +1739,823 @@ Create new user to test:
 
 `Search:` test 
 
+## Create login API
+
+### Create login API viewset
+
+views.py
+
+```
+from django.shortcuts import render
+
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import filters
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.authtoken.views import ObtainAuthToken
+
+from . import serializers
+from . import models
+from . import permissions
+
+# Create your views here.
+
+class HelloApiView(APIView):
+    """Test API View."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview = [
+            'Uses HTTP methods as function (get, post, patch, put, delete)',
+            'It is similar to a traditional Django view',
+            'Gives you the most control over your logic',
+            'Is mapped manually to URLs'
+        ]
+
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
+
+    def post(self, request):
+        """Create a hello message with our name."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'method': 'put'})
+
+    def patch(self, request, pk=None):
+        """Patch request, only updates fields provided in the request."""
+
+        return Response({'method': 'patch'})
+
+    def delete(self, request, pk=None):
+        """Deletes and object."""
+
+        return Response({'method': 'delete'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """Test API ViewSet."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """Return a hello message."""
+
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update)',
+            'Automatically maps to URLs using Routers',
+            'Provides more functionality with less code.'
+        ]
+
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
+
+    def create(self, request):
+        """Create a new hello message."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        """Handles getting an object by its ID."""
+
+        return Response({'http_method': 'GET'})
+
+    def update(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'http_method': 'PUT'})
+
+    def partial_update(self, request, pk=None):
+        """Handles updating part of an object."""
+
+        return Response({'http_method': 'PATCH'})
+
+    def destroy(self, request, pk=None):
+        """Handles removing an object."""
+
+        return Response({'http_method': 'DELETE'})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handles creating, creating and updating profiles."""
+
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.UpdateOwnProfile,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'email',)
+
+
+class LoginViewSet(viewsets.ViewSet):
+    """Checks email and password and returns an auth token."""
+
+    serializer_class = AuthTokenSerializer
+
+    def create(self, request):
+        """Use the ObtainAuthToken APIView to validate and create a token."""
+
+        return ObtainAuthToken().post(request)
+```
+
+urls.py
+
+```
+from django.conf.urls import url
+from django.conf.urls import include
+
+from rest_framework.routers import DefaultRouter
+
+from . import views
+
+router = DefaultRouter()
+router.register('hello-viewset', views.HelloViewSet, base_name='hello-viewset')
+router.register('profile', views.UserProfileViewSet)
+router.register('login', views.LoginViewSet, base_name='login')
+
+urlpatterns = [
+    url(r'^hello-view/', views.HelloApiView.as_view()),
+    url(r'', include(router.urls))
+]
+```
+
+### Test login API 
+
+### Set token header using ModHeader extension
+
+
+
+
+## Create profile feed API
+
+### Plan profile feed API
+
+### Add new Model Item
+
+models.py
+
+```
+from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import BaseUserManager
+
+# Create your models here.
+
+class UserProfileManager(BaseUserManager):
+    """Helps Django work with our custom user model."""
+
+    def create_user(self, email, name, password=None):
+        """Creates a new user profile object."""
+
+        if not email:
+            raise ValueError('Users must have an email address.')
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, name=name)
+
+        user.set_password(password)
+        user.save(using=self._db)
+
+        return user
+
+    def create_superuser(self, email, name, password):
+        """Creates and saves a new superuser with given details."""
+
+        user = self.create_user(email, name, password)
+
+        user.is_superuser = True
+        user.is_staff = True
+
+        user.save(using=self._db)
+
+        return user
+
+
+class UserProfile(AbstractBaseUser, PermissionsMixin):
+    """Respents a "user profile" inside our system."""
+
+    email = models.EmailField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UserProfileManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name']
+
+    def get_full_name(self):
+        """Used to get a users full name."""
+
+        return self.name
+
+    def get_short_name(self):
+        """Used to get a users short name."""
+
+        return self.name
+
+    def __str__(self):
+        """Django uses this when it needs to convert the object to a string"""
+
+        return self.email
+
+
+class ProfileFeedItem(models.Model):
+    """Profile status update."""
+
+    user_profile = models.ForeignKey('UserProfile', on_delete=models.CASCADE)
+    status_text = models.CharField(max_length=255)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        """Return the model as a string."""
+
+        return self.status_text
+```
+
+### Create and run model migration
+
+### Add profile feed model to admin
+
+admin.py
+
+```
+
+from django.contrib import admin
+
+from . import models
+
+# Register your models here.
+admin.site.register(models.UserProfile)
+admin.site.register(models.ProfileFeedItem)
+```
+
+### Create profile feed item serializer
+
+serializers.py
+
+```
+from rest_framework import serializers
+
+from . import models
+
+
+class HelloSerializer(serializers.Serializer):
+    """Serializes a name field for testing our APIView."""
+
+    name = serializers.CharField(max_length=10)
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """A serializer for our user profile objects."""
+
+    class Meta:
+        model = models.UserProfile
+        fields = ('id', 'email', 'name', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        """Create and return a new user."""
+
+        user = models.UserProfile(
+            email=validated_data['email'],
+            name=validated_data['name']
+        )
+
+        user.set_password(validated_data['password'])
+        user.save()
+
+        return user
+
+
+class ProfileFeedItemSerializer(serializers.ModelSerializer):
+    """A serializer for profile feed items."""
+
+    class Meta:
+        model = models.ProfileFeedItem
+        fields = ('id', 'user_profile', 'status_text', 'create_on')
+        extra_kwargs = {'user_profile': {'read_only': True}}
+
+        
+```
+
+### Create Viewset for our profile feed Item
+
+views.py
+
+```
+from django.shortcuts import render
+
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import filters
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.authtoken.views import ObtainAuthToken
+
+from . import serializers
+from . import models
+from . import permissions
+
+# Create your views here.
+
+class HelloApiView(APIView):
+    """Test API View."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview = [
+            'Uses HTTP methods as function (get, post, patch, put, delete)',
+            'It is similar to a traditional Django view',
+            'Gives you the most control over your logic',
+            'Is mapped manually to URLs'
+        ]
+
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
+
+    def post(self, request):
+        """Create a hello message with our name."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'method': 'put'})
+
+    def patch(self, request, pk=None):
+        """Patch request, only updates fields provided in the request."""
+
+        return Response({'method': 'patch'})
+
+    def delete(self, request, pk=None):
+        """Deletes and object."""
+
+        return Response({'method': 'delete'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """Test API ViewSet."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """Return a hello message."""
+
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update)',
+            'Automatically maps to URLs using Routers',
+            'Provides more functionality with less code.'
+        ]
+
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
+
+    def create(self, request):
+        """Create a new hello message."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        """Handles getting an object by its ID."""
+
+        return Response({'http_method': 'GET'})
+
+    def update(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'http_method': 'PUT'})
+
+    def partial_update(self, request, pk=None):
+        """Handles updating part of an object."""
+
+        return Response({'http_method': 'PATCH'})
+
+    def destroy(self, request, pk=None):
+        """Handles removing an object."""
+
+        return Response({'http_method': 'DELETE'})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handles creating, creating and updating profiles."""
+
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.UpdateOwnProfile,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'email',)
+
+
+class LoginViewSet(viewsets.ViewSet):
+    """Checks email and password and returns an auth token."""
+
+    serializer_class = AuthTokenSerializer
+
+    def create(self, request):
+        """Use the ObtainAuthToken APIView to validate and create a token."""
+
+        return ObtainAuthToken().post(request)
+
+
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handles creating, reading and updating profile feed items."""
+
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = serializers.ProfileFeedItemSerializer
+    queryset = models.ProfileFeedItem.objects.all()
+
+    def perform_create(self, serializer):
+        """Sets the user profile to the logged in user."""
+
+        serializer.save(user_profile=self.request.user)
+```
+
+urls.py
+
+```
+from django.conf.urls import url
+from django.conf.urls import include
+
+from rest_framework.routers import DefaultRouter
+
+from . import views
+
+router = DefaultRouter()
+router.register('hello-viewset', views.HelloViewSet, base_name='hello-viewset')
+router.register('profile', views.UserProfileViewSet)
+router.register('login', views.LoginViewSet, base_name='login')
+router.register('feed', views.UserProfileFeedViewSet)
+
+urlpatterns = [
+    url(r'^hello-view/', views.HelloApiView.as_view()),
+    url(r'', include(router.urls))
+]
+```
+
+### Test Feed API
+
+### Add permissions for feed API
+
+permissions.py
+
+```
+
+from rest_framework import permissions
+
+
+class UpdateOwnProfile(permissions.BasePermission):
+    """Allow users to edit their own profile."""
+
+    def has_object_permission(self, request, view, obj):
+        """Check user is trying to edit their own profile."""
+
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.id == request.user.id
+
+
+class PostOwnStatus(permissions.BasePermission):
+    """Allow users to update their own profile."""
+
+    def has_object_permission(self, request, view, obj):
+        """Check the user is trying to update their own status."""
+
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.user_profile.id == request.user.id
+```
+
+views.py
+
+```
+from django.shortcuts import render
+
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import filters
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
+from . import serializers
+from . import models
+from . import permissions
+
+# Create your views here.
+
+class HelloApiView(APIView):
+    """Test API View."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview = [
+            'Uses HTTP methods as function (get, post, patch, put, delete)',
+            'It is similar to a traditional Django view',
+            'Gives you the most control over your logic',
+            'Is mapped manually to URLs'
+        ]
+
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
+
+    def post(self, request):
+        """Create a hello message with our name."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'method': 'put'})
+
+    def patch(self, request, pk=None):
+        """Patch request, only updates fields provided in the request."""
+
+        return Response({'method': 'patch'})
+
+    def delete(self, request, pk=None):
+        """Deletes and object."""
+
+        return Response({'method': 'delete'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """Test API ViewSet."""
+
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """Return a hello message."""
+
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update)',
+            'Automatically maps to URLs using Routers',
+            'Provides more functionality with less code.'
+        ]
+
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
+
+    def create(self, request):
+        """Create a new hello message."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        """Handles getting an object by its ID."""
+
+        return Response({'http_method': 'GET'})
+
+    def update(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'http_method': 'PUT'})
+
+    def partial_update(self, request, pk=None):
+        """Handles updating part of an object."""
+
+        return Response({'http_method': 'PATCH'})
+
+    def destroy(self, request, pk=None):
+        """Handles removing an object."""
+
+        return Response({'http_method': 'DELETE'})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handles creating, creating and updating profiles."""
+
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.UpdateOwnProfile,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'email',)
+
+
+class LoginViewSet(viewsets.ViewSet):
+    """Checks email and password and returns an auth token."""
+
+    serializer_class = AuthTokenSerializer
+
+    def create(self, request):
+        """Use the ObtainAuthToken APIView to validate and create a token."""
+
+        return ObtainAuthToken().post(request)
+
+
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handles creating, reading and updating profile feed items."""
+
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = serializers.ProfileFeedItemSerializer
+    queryset = models.ProfileFeedItem.objects.all()
+    permission_classes = (permissions.PostOwnStatus, IsAuthenticatedOrReadOnly)
+
+    def perform_create(self, serializer):
+        """Sets the user profile to the logged in user."""
+
+        serializer.save(user_profile=self.request.user)
+```
+
+### Test feed API permissions
+
+### Restrict viewing status updates to logged in user only
+
+### Test new private feed
+
+
+
+## Deploying our API to a server on AWS
+
+### Introduction to deploying our app to AWS
+
+- AWS Free Tier - https://aws.amazon.com/es/free/
+- Github - https://github.com/
+
+### Pushing our project to Github
+
+### Add deployment script and configs to our project
+
+- uWSGI official docs - https://uwsgi-docs.readthedocs.io/en/latest/
+
+server_setup.sh
+
+```
+#!/usr/bin/env bash
+
+set -e
+
+# TODO: Set to URL of git repo.
+PROJECT_GIT_URL='https://github.com/LondonAppDeveloper/byob-profiles-rest-api.git'
+
+PROJECT_BASE_PATH='/usr/local/apps'
+VIRTUALENV_BASE_PATH='/usr/local/virtualenvs'
+
+# Set Ubuntu Language
+locale-gen en_GB.UTF-8
+
+# Install Python, SQLite and pip
+echo "Installing dependencies..."
+apt-get update
+apt-get install -y python3-dev python3-venv sqlite python-pip supervisor nginx git
+
+mkdir -p $PROJECT_BASE_PATH
+git clone $PROJECT_GIT_URL $PROJECT_BASE_PATH/profiles-rest-api
+
+mkdir -p $VIRTUALENV_BASE_PATH
+python3 -m venv $VIRTUALENV_BASE_PATH/profiles_api
+
+$VIRTUALENV_BASE_PATH/profiles_api/bin/pip install -r $PROJECT_BASE_PATH/profiles-rest-api/requirements.txt
+
+# Run migrations
+cd $PROJECT_BASE_PATH/profiles-rest-api/src
+
+# Setup Supervisor to run our uwsgi process.
+cp $PROJECT_BASE_PATH/profiles-rest-api/deploy/supervisor_profiles_api.conf /etc/supervisor/conf.d/profiles_api.conf
+supervisorctl reread
+supervisorctl update
+supervisorctl restart profiles_api
+
+# Setup nginx to make our application accessible.
+cp $PROJECT_BASE_PATH/profiles-rest-api/deploy/nginx_profiles_api.conf /etc/nginx/sites-available/profiles_api.conf
+rm /etc/nginx/sites-enabled/default
+ln -s /etc/nginx/sites-available/profiles_api.conf /etc/nginx/sites-enabled/profiles_api.conf
+systemctl restart nginx.service
+
+echo "DONE! :)"
+```
+
+supervisor config
+
+```
+[program:profiles_api]
+command = /usr/local/virtualenvs/profiles_api/bin/uwsgi --http :9000 --wsgi-file /usr/local/apps/profiles-rest-api/src/profiles_project/profiles_project/wsgi.py
+directory = /usr/local/apps/profiles-rest-api/src/profiles_project/
+user = root
+autostart = true
+autorestart = true
+stdout_logfile = /var/log/profiles_api.log
+stderr_logfile = /var/log/profiles_api_err.log
+```
+
+nginx config
+
+```
+server {
+    listen 80 default_server;
+
+    location /static/admin {
+        alias /usr/local/virtualenvs/profiles_api/lib/python3.5/site-packages/django/contrib/admin/static/admin;
+    }
+
+    location /static/rest_framework {
+        alias /usr/local/virtualenvs/profiles_api/lib/python3.5/site-packages/rest_framework/static/rest_framework;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:9000/;
+        proxy_set_header    Host                $host;
+        proxy_set_header    X-Real-IP           $remote_addr;
+        proxy_set_header    X-Forwarded-For     $remote_addr;
+        proxy_set_header    X-Forwarded-Proto   $scheme;
+        proxy_redirect      off;
+
+    }
+}
+```
+
+
+### Create and launch an EC2 instance
+
+- AWS Login Page - https://aws.amazon.com/es/console/
+
+### Download and run server setup script
+
+### Create superuser and test server
+
+### Add domain to allowed list and push update
+
+### Test site on server
+
+
+
+
+## Summary
+
+### Course outro
+
+- Django (Official Docs) - https://docs.djangoproject.com/en/1.11/
+- Django REST Framework (Official Docs) - https://www.django-rest-framework.org/
+
 
 ## References
 - https://www.udemy.com/django-python
