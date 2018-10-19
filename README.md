@@ -1743,6 +1743,10 @@ Create new user to test:
 
 ### Create login API viewset
 
+Open Atom Project
+
+profiles-rest-api > src > profiles_project > profiles_api > views.py
+
 views.py
 
 ```
@@ -1881,6 +1885,8 @@ class LoginViewSet(viewsets.ViewSet):
         return ObtainAuthToken().post(request)
 ```
 
+profiles-rest-api > src > profiles_project > profiles_api > urls.py
+
 urls.py
 
 ```
@@ -1903,6 +1909,21 @@ urlpatterns = [
 ```
 
 ### Test login API 
+
+Make sure your development server is running
+
+On the terminal:
+- Login to the Vagrant Server
+- Work on the `profiles_api` virtual environment
+- Change to the `/vagrant/src/profiles_project` location
+- Run `python manage.py runserver 0.0.0.0:8080`
+
+On Chrome:
+- Go to `127.0.0.1:8080/api`
+- We created a login API as a viewset, instead of as an API view because that way we can add it to this API root
+- Click the URL here for the login API
+
+
 
 ### Set token header using ModHeader extension
 
