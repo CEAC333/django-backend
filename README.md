@@ -221,7 +221,7 @@ And now there's a basic Vagrantfile in that folder
 ### Configuring our Vagrant box
 
 *Vagrantfile Basic Template for Django Projects:*
-```
+```bash
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -381,7 +381,7 @@ ATOM:
 profiles-rest-api > profiles_project > profiles_project > `settings.py`
 
 Enable the following apps adding them to the list:
-```
+```python
 INSTALLED_APPS = [
 ... 
 ...
@@ -453,7 +453,7 @@ Django handles the interaction between out model and our database on our behalf 
 
 *models.py*
 
-```
+```python
 # ... Imports Section ... #
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
@@ -497,11 +497,11 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 
 ### Add a user model manager
 
-```
+```python
 from django.contrib.auth.models import BaseUserManager
 ```
 
-```
+```python
 class UserProfileManager(BaseUserManager):
     """Helps Django work with out custom user model"""
     
@@ -538,7 +538,7 @@ Inside Atom:
 profiles-rest-api > src > profiles_project > `setting.py`
 
 Add the following last line to that file:
-```
+```python
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'profiles_api.UserProfile'
@@ -610,7 +610,7 @@ Open `profiles-rest-api` project on Atom
 
 profiles-rest-api > src > profiles_project > profiles_api > `admin.py`
 
-```
+```python
 from django.contrib import admin
 
 from . import models
@@ -677,7 +677,7 @@ profiles-rest-api > src > project_project > profiles_api > `views.py`
 
 
 
-```
+```python
 from django.shortcuts import render
 
 from rest_framework.views import APIView
@@ -707,7 +707,7 @@ Open `profiles-rest-api` project in Atom:
 
 profiles-rest-api > src > project_project > profiles_api > profiles_project > `utils.py`
 
-```
+```python
 """profiles_project URL Configuration
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -736,7 +736,7 @@ Create a new file under
 
 `src\profiles_project\profiles_api\urls.py`
 
-```
+```python
 from django.conf.urls import url
 
 from . import views
@@ -772,7 +772,7 @@ In Atom inside `profiles-rest-api` project create a new file, `serializers.py`
 
 profiles-rest-api > src > profiles_project > profiles_api > New file `serializers.py`
 
-```
+```python
 from rest_framework import serializers
 
 
@@ -791,7 +791,7 @@ In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `views.py`
 
-```
+```python
 from django.shortcuts import render
 
 from rest_framework.views import APIView
@@ -851,14 +851,14 @@ Go to Chrome under:
 
 ### Add PUT, PATCH and DELETE methods
 
-```
+```python
 def put(self, request, pk=None):
     """Handles updating an object."""
     
     return Response({'method': 'put'})
     
 def patch(self, request, pk=None):
-    """Patch request, only updates fields provided in the request""""
+    """Patch request, only updates fields provided in the request"""
     
     return Response({'method': 'patch'})
     
@@ -914,7 +914,7 @@ In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `views.py`
 
-```
+```python
 from django.shortcuts import render
 
 from rest_framework.views import APIView
@@ -992,7 +992,7 @@ In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `urls.py`
 
-```
+```python
 from django.conf.urls import url
 from django.conf.urls import include
 
@@ -1029,7 +1029,7 @@ In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `views.py`
 
-```
+```python
 from django.shortcuts import render
 
 from rest_framework import viewsets
@@ -1189,7 +1189,7 @@ In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `serializers.py`
 
-```
+```python
 from rest_framework import serializers
 
 from . import models
@@ -1231,7 +1231,7 @@ In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `views.py`
 
-```
+```python
 from django.shortcuts import render
 
 from rest_framework import viewsets
@@ -1353,7 +1353,7 @@ In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `urls.py`
 
-```
+```python
 from django.conf.urls import url
 from django.conf.urls import include
 
@@ -1390,11 +1390,15 @@ Go to Chrome under:
 ```
 
 Create new user to test:
+
 `Email:` test@test.com
+
 `Name:` Test User
+
 `Password:` Awesome1
 
 Test updating a user:
+
 ```
 127.0.0.1:8080/api/profile/2/
 ```
@@ -1416,7 +1420,7 @@ Create a new file called `permisssions.py`
 
 profiles-rest-api > src > profiles_project > profiles_api > `permisssions.py`
 
-```
+```python
 from rest_framework import permissions
 
 
@@ -1440,7 +1444,7 @@ In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `views.py`
 
-```
+```python
 from django.shortcuts import render
 
 from rest_framework import viewsets
@@ -1584,7 +1588,7 @@ In Atom inside `profiles-rest-api` project
 
 profiles-rest-api > src > profiles_project > profiles_api > `views.py`
 
-```
+```python
 from django.shortcuts import render
 
 from rest_framework import viewsets
@@ -1749,7 +1753,7 @@ profiles-rest-api > src > profiles_project > profiles_api > views.py
 
 views.py
 
-```
+```python
 from django.shortcuts import render
 
 from rest_framework import viewsets
@@ -1889,7 +1893,7 @@ profiles-rest-api > src > profiles_project > profiles_api > urls.py
 
 urls.py
 
-```
+```python
 from django.conf.urls import url
 from django.conf.urls import include
 
@@ -1943,6 +1947,7 @@ Then our back-end will confirm that that username and password is valid. If it i
 ```
 
 `Name` : Authorization
+
 `Value` : Token XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 Test to modify your own user
@@ -1950,6 +1955,34 @@ Test to modify your own user
 ## Create profile feed API
 
 ### Plan profile feed API
+
+#### Basic Requirements
+
+**Creating new feed items**
+- Logged in user only
+
+**Updating feed item**
+- Logged in user only
+
+**Delete profile feed items**
+- Logged in user only
+
+**Viewing other profile status updates**
+- All users
+
+#### API URLs
+
+**URLs for our API**
+
+`/api/feed/` - list all feed items
+- GET (list feed items)
+- POST (create feed item for logged in user)
+
+`/api/feed/<feed_item_id>/` - manage specific feed items
+- GET (get the feed item)
+- PUT / PATCH (update feed item)
+- DELETE (delete feed item)
+
 
 ### Add new Model Item
 
@@ -2037,6 +2070,14 @@ class ProfileFeedItem(models.Model):
 
 ### Create and run model migration
 
+```
+python manage.py makemigrations
+```
+
+```
+python manage.py migrate
+```
+
 ### Add profile feed model to admin
 
 admin.py
@@ -2095,7 +2136,7 @@ class ProfileFeedItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.ProfileFeedItem
-        fields = ('id', 'user_profile', 'status_text', 'create_on')
+        fields = ('id', 'user_profile', 'status_text', 'created_on')
         extra_kwargs = {'user_profile': {'read_only': True}}
 
         
@@ -2277,6 +2318,22 @@ urlpatterns = [
 ```
 
 ### Test Feed API
+
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Open Chrome, make sure that you have the authorization header and that is checked
+
+```
+127.0.0.1:8080/api/feed/
+```
+
+Test the Endpoint ...
+
+`Status text`: Test status 1!
+
+`Status text`: Test status 2!
 
 ### Add permissions for feed API
 
@@ -2466,7 +2523,48 @@ class UserProfileFeedViewSet(viewsets.ModelViewSet):
 
 ### Test feed API permissions
 
+```
+python manage.py runserver 0.0.0.0:8080
+```
+
+Open Chrome, make sure that you have the authorization header and that is checked
+
+```
+127.0.0.1:8080/api/feed/
+```
+
+Test the Endpoint ...
+
+`Status text`: Hello test status!
+
+```
+127.0.0.1:8080/api/feed/4/
+```
+
+`Status text`: Hello test status! Update!
+
 ### Restrict viewing status updates to logged in user only
+
+views.py
+
+```
+from rest_framework.permissions import IsAuthenticated
+```
+
+```
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handles creating, reading and updating profile feed items."""
+
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = serializers.ProfileFeedItemSerializer
+    queryset = models.ProfileFeedItem.objects.all()
+    permission_classes = (permissions.PostOwnStatus, IsAuthenticated)
+
+    def perform_create(self, serializer):
+        """Sets the user profile to the logged in user."""
+
+        serializer.save(user_profile=self.request.user)
+```
 
 ### Test new private feed
 
