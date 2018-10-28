@@ -1927,8 +1927,25 @@ On Chrome:
 
 ### Set token header using ModHeader extension
 
+The Client Side App will make a HTTP request to our `login` endpoint with the `username` and `password` that it wants to authenticate
+Then our back-end will confirm that that username and password is valid. If it is valid the we'll generate a temporary token
 
+```
+{
+  "token": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+}
+```
 
+`ModHeaders` extension -> + -> Filter -> URL Pattern
+
+```
+"//127.0.0.1:8080/"
+```
+
+`Name` : Authorization
+`Value` : Token XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+Test to modify your own user
 
 ## Create profile feed API
 
